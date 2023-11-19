@@ -4,7 +4,38 @@ final class MovieQuizViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        sleep(3)
     }
+    
+    struct ViewModel {
+      let image: UIImage
+      let question: String
+      let questionNumber: String
+    }
+    
+    // для состояния "Вопрос показан"
+    struct QuizStepViewModel {
+      let image: UIImage
+      let question: String
+      let questionNumber: String
+    }
+
+    // для состояния "Результат квиза"
+    struct QuizResultsViewModel {
+      let title: String
+      let text: String
+      let buttonText: String
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
 /*
