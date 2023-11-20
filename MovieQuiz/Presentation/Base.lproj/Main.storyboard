@@ -3,7 +3,8 @@
     <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -31,16 +32,16 @@
                                         <rect key="frame" x="0.0" y="0.0" width="335" height="718"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iMj-Rl-cxc">
-                                                <rect key="frame" x="0.0" y="0.0" width="335" height="23.666666666666668"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="335" height="23.333333333333332"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Воспрос:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UdD-to-ZQl" userLabel="Question Title Label">
-                                                        <rect key="frame" x="0.0" y="0.0" width="304.33333333333331" height="23.666666666666668"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="300.66666666666669" height="23.333333333333332"/>
                                                         <fontDescription key="fontDescription" name="YSDisplay-Medium" family="YS Display" pointSize="20"/>
                                                         <color key="textColor" name="YP White"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="252" text="1/10" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wpg-6p-0E1" userLabel="Index Label">
-                                                        <rect key="frame" x="304.33333333333331" y="0.0" width="30.666666666666686" height="23.666666666666668"/>
+                                                        <rect key="frame" x="300.66666666666669" y="0.0" width="34.333333333333314" height="23.333333333333332"/>
                                                         <fontDescription key="fontDescription" name="YSDisplay-Medium" family="YS Display" pointSize="17"/>
                                                         <color key="textColor" name="YP White"/>
                                                         <nil key="highlightedColor"/>
@@ -48,14 +49,14 @@
                                                 </subviews>
                                             </stackView>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="vqG-et-rfs" userLabel="Preview Image">
-                                                <rect key="frame" x="0.0" y="23.666666666666657" width="335" height="502.66666666666686"/>
+                                                <rect key="frame" x="0.0" y="23.333333333333343" width="335" height="502.66666666666663"/>
                                                 <color key="backgroundColor" name="YP White"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="vqG-et-rfs" secondAttribute="height" multiplier="2:3" id="cOG-H2-y8v"/>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Рейтинг этого фильма меньше, чем 5?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UZT-QJ-bN3" userLabel="Question Title Label">
-                                                <rect key="frame" x="0.0" y="526.33333333333337" width="335" height="131.66666666666663"/>
+                                                <rect key="frame" x="0.0" y="526" width="335" height="132"/>
                                                 <fontDescription key="fontDescription" name="YSDisplay-Bold" family="YS Display" pointSize="23"/>
                                                 <color key="textColor" name="YP White"/>
                                                 <nil key="highlightedColor"/>
@@ -79,6 +80,9 @@
                                                                 <integer key="value" value="15"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="noButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="UAe-Mw-kL1"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Eg5-tt-2RR">
                                                         <rect key="frame" x="177.66666666666663" y="0.0" width="157.33333333333337" height="60"/>
@@ -93,6 +97,9 @@
                                                                 <integer key="value" value="15"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="yesButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="6Nq-Se-mpy"/>
+                                                        </connections>
                                                     </button>
                                                 </subviews>
                                             </stackView>
@@ -110,6 +117,14 @@
                             <constraint firstAttribute="trailing" secondItem="ddJ-7M-HsA" secondAttribute="trailing" constant="20" id="y63-nw-iHX"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="counterLabel" destination="wpg-6p-0E1" id="ufa-xj-9V2"/>
+                        <outlet property="imageView" destination="vqG-et-rfs" id="nCd-cN-gTt"/>
+                        <outlet property="noButton" destination="5Xy-4f-2el" id="RUf-PC-Bza"/>
+                        <outlet property="questionLabel" destination="UZT-QJ-bN3" id="Yt6-BN-Jfh"/>
+                        <outlet property="textLabel" destination="UdD-to-ZQl" id="lIq-eE-Cqh"/>
+                        <outlet property="yesButton" destination="Eg5-tt-2RR" id="uug-m6-6EG"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
