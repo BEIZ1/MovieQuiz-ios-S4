@@ -165,7 +165,6 @@ final class MovieQuizViewController: UIViewController {
     ]
     
     
-    
     @IBOutlet private weak var questionLabel: UILabel!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var noButton: UIButton!
@@ -184,4 +183,7 @@ final class MovieQuizViewController: UIViewController {
         
     }
 }
+
+
+    
 
