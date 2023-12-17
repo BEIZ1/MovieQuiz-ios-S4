@@ -1,8 +1,9 @@
-//
-//  QuizAlertModel.swift
-//  MovieQuiz
-//
-//  Created by Ильгиз Хабибуллин on 17/12/2023.
-//
-
 import Foundation
+
+struct AlertModel {
+
+    let title: String
+    let message: String
+    let buttonText: String
+    let buttonAction: () -> Void
+}

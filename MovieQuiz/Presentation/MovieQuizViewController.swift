@@ -1,17 +1,18 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-    
-    private let questionsAmount: Int = 10
-    private lazy var questionFactory: QuestionFactoryProtocol = {
-        let factory = QuestionFactory()
-        factory.delegate = self
-        return factory
-       }()
-    private var currentQuestion: QuizQuestion?
-    private var currentQuestionIndex = 0
-    private var correctAnswers = 0
-       
+      private let questionsAmount: Int = 10
+      private lazy var questionFactory: QuestionFactoryProtocol = {
+          let factory = QuestionFactory()
+          factory.delegate = self
+          return factory
+      }()
+      private var currentQuestion: QuizQuestion?
+      private var currentQuestionIndex = 0
+      private var correctAnswers = 0
+      private var alertPresenter: AlertPresenter?
+      private var statisticSetvice: StatisticService?
+      
     // MARK: - Private functions
     
     private func customizationUI(){
@@ -42,82 +43,95 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
     }
     private func show(quiz result: QuizResultsViewModel) {
-        let alert = UIAlertController(
-            title: result.title,
-            message: result.text,
-            preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self]_ in
-            guard let self = self else { return }
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            self.imageView.layer.borderColor = UIColor.clear.cgColor
-            questionFactory.requestNextQuestion()
-        }
-        
-        alert.addAction(action)
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
-                        question: model.text,
-                        questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-        return questionStep
-    }
-    
-    private func show(quiz step: QuizStepViewModel) {
-        imageView.image = step.image
-        questionLabel.text = step.question
-        counterLabel.text = step.questionNumber
-    }
-    
-    private func showAnswerResult(isCorrect: Bool) {
-        if isCorrect {
-            correctAnswers += 1
-        }
-        
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.cornerRadius = 20
-        imageView.layer.borderColor = isCorrect ? UIColor.init(named: "YPGreen")?.cgColor : UIColor.init(named: "YPRed")?.cgColor
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {[weak self] in
-            guard let self = self else { return }
-            self.showNextQuestionOrResults()
-        }
-    }
-    
-    private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
-            let text = correctAnswers == questionsAmount ?
-                    "Поздравляем, вы ответили на 10 из 10!" :
-                    "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
-            let viewModel = QuizResultsViewModel(
-                title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
-        } else {
-            currentQuestionIndex += 1
-            self.questionFactory.requestNextQuestion()
-            imageView.layer.borderColor = UIColor.clear.cgColor
-        }
-    }
-    
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
+          
+      }
+      
+      private func convert(model: QuizQuestion) -> QuizStepViewModel {
+          let questionStep = QuizStepViewModel(
+              image: UIImage(named: model.image) ?? UIImage(),
+              question: model.text,
+              questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
+          return questionStep
+      }
+      
+      private func show(quiz step: QuizStepViewModel) {
+          imageView.image = step.image
+          questionLabel.text = step.question
+          counterLabel.text = step.questionNumber
+      }
+      
+      private func showAnswerResult(isCorrect: Bool) {
+          if isCorrect { // 1
+              correctAnswers += 1 // 2
+          }
+          
+          imageView.layer.masksToBounds = true
+          imageView.layer.borderWidth = 8
+          imageView.layer.cornerRadius = 20
+          imageView.layer.borderColor = isCorrect ? UIColor.init(named: "YPGreen")?.cgColor : UIColor.init(named: "YPRed")?.cgColor
+          
+          DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {[weak self] in
+              guard let self = self else { return }
+              self.showNextQuestionOrResults()
+          }
+      }
+      
+      private func showNextQuestionOrResults() {
+          
+          if currentQuestionIndex == questionsAmount - 1 {
+              showFinalResults()
+              imageView.layer.borderColor = UIColor.clear.cgColor
+          } else {
+              currentQuestionIndex += 1
+              self.questionFactory.requestNextQuestion()
+              imageView.layer.borderColor = UIColor.clear.cgColor
+          }
+      }
+      
+      private func showFinalResults(){
+          statisticSetvice?.store(correct: correctAnswers, total: questionsAmount)
+          let alertModel = AlertModel(
+              title: "Игра окончена!",
+              message: makeResultMessage(),
+              buttonText: "OK",
+              buttonAction: {[weak self] in
+                  self?.currentQuestionIndex = 0
+                  self?.correctAnswers = 0
+                  self?.questionFactory.requestNextQuestion()
+              }
+          )
+          alertPresenter?.show(alertModel: alertModel)
+      }
+      
+      private func makeResultMessage() -> String {
+          guard let statisticService = statisticSetvice, let bestGame = statisticSetvice?.bestGame else{
+              assertionFailure("Error")
+              return ""
+          }
+          let accuracy = String(format: "%.2f", statisticService.totalAccuracy)
+          let totalPlaysCount = "Количество сыгранных квизов:\(statisticService.gamesCount)"
+          let currentGameResult = "Ваш результат: \(correctAnswers)\\\(questionsAmount)"
+          let bestGameInfo = "Рекорд: \(bestGame.correct)\\\(bestGame.total)" +
+          " (\(bestGame.date)"
+          let averageAccuracy = "Средняя точность: \(accuracy)%"
+          let resultMessage = [
+              currentGameResult, totalPlaysCount, bestGameInfo, averageAccuracy
+          ].joined(separator: "\n")
+          return resultMessage
+      }
 
-        currentQuestion = question
-        let viewModel = convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
-    }
+
+      func didReceiveNextQuestion(question: QuizQuestion?) {
+          guard let question = question else {
+              return
+          }
+
+          currentQuestion = question
+          let viewModel = convert(model: question)
+          DispatchQueue.main.async { [weak self] in
+              self?.show(quiz: viewModel)
+          }
+      }
     
     // MARK: - Lifecycle
     
@@ -125,6 +139,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         super.viewDidLoad()
         questionFactory.delegate = self
         questionFactory.requestNextQuestion()
+        alertPresenter = AlertPresenterImpl(viewController:self)
+        statisticSetvice = StatisticServiceImplementation()
         customizationUI()
     }
     @IBOutlet private weak var questionLabel: UILabel!
