@@ -29,7 +29,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         yesButton.backgroundColor = UIColor.init(named: "YPWhite")
         yesButton.layer.cornerRadius = 15
         yesButton.frame.size = CGSize(width: 157, height: 60)
-        
+
         textLabel.text = "Вопрос:"
         textLabel.textColor = UIColor.init(named: "YPWhite")
         textLabel.frame.size = CGSize(width: 72, height: 24)
@@ -142,7 +142,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         alertPresenter = AlertPresenterImpl(viewController:self)
         statisticSetvice = StatisticServiceImplementation()
         customizationUI()
+
     }
+    
     @IBOutlet private weak var questionLabel: UILabel!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var noButton: UIButton!
