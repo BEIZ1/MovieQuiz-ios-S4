@@ -1,6 +1,6 @@
 import Foundation
 
-final class StatisticServiceImplementation: StatisticService{
+class StatisticServiceImplementation: StatisticService{
     private let userDefaults: UserDefaults
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
@@ -22,7 +22,7 @@ final class StatisticServiceImplementation: StatisticService{
     }
 }
 extension StatisticServiceImplementation{
-
+    
     var gamesCount: Int {
         get {
             userDefaults.integer(forKey: Keys.gamesCount.rawValue)
@@ -64,9 +64,9 @@ extension StatisticServiceImplementation{
             userDefaults.set(data,forKey: Keys.bestGame.rawValue)
         }
     }
-        var totalAccuracy: Double{
-           Double(correct) / Double(total) * 100
-        }
+    var totalAccuracy: Double{
+        Double(correct) / Double(total) * 100
+    }
     
     func store(correct: Int, total: Int) {
         self.correct += correct

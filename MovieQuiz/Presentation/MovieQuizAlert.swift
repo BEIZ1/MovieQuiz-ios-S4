@@ -5,7 +5,7 @@ protocol AlertPresenter{
     func show (alertModel: AlertModel)
 }
 
-final class AlertPresenterImpl{
+class AlertPresenterImpl{
     weak var viewController : UIViewController?
     init(viewController: UIViewController? = nil) {
         self.viewController = viewController
