@@ -7,3 +7,5 @@ protocol StatisticService{
     
     func store(correct:Int, total: Int)
 }
+
+
