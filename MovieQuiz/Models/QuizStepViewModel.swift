@@ -1,3 +1,10 @@
+//
+//  QuizStepViewModel.swift
+//  MovieQuiz
+//
+//
+
+import Foundation
 import UIKit
 
 struct QuizStepViewModel {
