@@ -1,97 +1,74 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
+    private var presenter: MovieQuizPresenter?
     
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var textLabel: UILabel!
-    @IBOutlet private var counterLabel: UILabel!
-    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet private var yesButton: UIButton!
-    @IBOutlet private var noButton: UIButton!
+    @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var textLabel: UILabel!
+    @IBOutlet private weak var noButton: UIButton!
+    @IBOutlet private weak var yesButton: UIButton!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var launchScreen: UIImageView!
 
-    private lazy var presenter: MovieQuizPresenter = {
-           return MovieQuizPresenter(viewController: self)
-       }()
-
-    // MARK: - Lifecycle
-
+    @IBAction private func answerButtonClicked(_ sender: UIButton) {
+        let isYesClicked = sender == yesButton
+        presenter?.answerButtonClicked(isYesClicked)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         presenter = MovieQuizPresenter(viewController: self)
-
-        imageView.layer.cornerRadius = 20
+    }
+    
+    func showNextQuestion(_ viewModel: QuizStepViewModel) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.showQuestion(quiz: viewModel)
+            self?.hideLaunchScreen()
+            self?.hideLoadingIndicator()
+        }
     }
 
-    // MARK: - Actions
-
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        presenter.yesButtonClicked()
-    }
-
-    @IBAction private func noButtonClicked(_ sender: UIButton) {
-        presenter.noButtonClicked()
-    }
-
-    // MARK: - Private functions
-
-    func show(quiz step: QuizStepViewModel) {
-        imageView.layer.borderColor = UIColor.clear.cgColor
-        imageView.image = step.image
-        textLabel.text = step.question
-        counterLabel.text = step.questionNumber
-    }
-
-    func show(quiz result: QuizResultsViewModel) {
-        let message = presenter.makeResultsMessage()
-
-        let alert = UIAlertController(
-            title: result.title,
-            message: message,
-            preferredStyle: .alert)
-
-            let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-                guard let self = self else { return }
-
-                self.presenter.restartGame()
-            }
-
-        alert.addAction(action)
-
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func highlightImageBorder(isCorrectAnswer: Bool) {
+    func showAnswer(isCorrect: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        imageView.layer.cornerRadius = 20
     }
-
+    
+    func showQuestion(quiz step: QuizStepViewModel) {
+        counterLabel.text = step.questionNumber
+        imageView.image = UIImage(data: step.image) ?? UIImage()
+        textLabel.text = step.question
+        imageView.layer.borderWidth = 0
+    }
+    
     func showLoadingIndicator() {
-        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
-        activityIndicator.startAnimating() // включаем анимацию
+        activityIndicator.startAnimating()
     }
-
+    
     func hideLoadingIndicator() {
-        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
     }
-
-    func showNetworkError(message: String) {
-        hideLoadingIndicator()
-
-        let alert = UIAlertController(
-            title: "Ошибка",
-            message: message,
-            preferredStyle: .alert)
-
-            let action = UIAlertAction(title: "Попробовать ещё раз",
-            style: .default) { [weak self] _ in
-                guard let self = self else { return }
-
-                self.presenter.restartGame()
-            }
-
+    
+    func showLaunchScreen() {
+        launchScreen.isHidden = false
+    }
+    
+    func hideLaunchScreen() {
+        launchScreen.isHidden = true
+    }
+    
+    func showAlert(_ alertData: AlertModel) {
+        let alert = UIAlertController(title: alertData.title, message: alertData.message, preferredStyle: .alert)
+        func handler(_: UIAlertAction) {
+            alertData.completion()
+        }
+        let action = UIAlertAction(title: alertData.buttonText, style: .default, handler: handler)
         alert.addAction(action)
+        alert.view.accessibilityIdentifier = "Alert"
+        DispatchQueue.main.async { [weak self] in
+            self?.present(alert, animated: true, completion: nil)
+        }
     }
 }
-
