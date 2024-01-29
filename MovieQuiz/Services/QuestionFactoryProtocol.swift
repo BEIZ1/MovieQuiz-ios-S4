@@ -1,12 +1,9 @@
-//
-//  QuizFactoryProtocol.swift
-//  MovieQuiz
-//
-//
-
 import Foundation
 
 protocol QuestionFactoryProtocol {
-    func loadData()
+    var delegate: QuestionFactoryDelegate? { get set }
+
     func requestNextQuestion()
+
+    func loadData()
 }

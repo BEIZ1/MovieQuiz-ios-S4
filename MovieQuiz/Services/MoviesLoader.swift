@@ -1,30 +1,26 @@
-//
-//  MoviesLoader.swift
-//  MovieQuiz
-//
-//
-
 import Foundation
 
-protocol MoviesLoading {
-    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void)
-}
-
-struct MoviesLoader: MoviesLoading {
-    // MARK: - NetworkClient
-    private let networkClient = NetworkClient()
+struct MoviesLoader: MoviesLoadingProtocol {
+    private let networkClient: NetworkRouting
+    private let API_TOKEN = "k_zcuw1ytf"
+    private let BASE_API_URL = "https://tv-api.com/en/API/"
     
-    // MARK: - URL
+    init(networkClient: NetworkRouting = NetworkClient()) {
+        self.networkClient = networkClient
+    }
+
     private var mostPopularMoviesUrl: URL {
-        guard let url = URL(string: "https://tv-api.com/en/API/MostPopularMovies/k_kiwxbi4y") else {
-            preconditionFailure("Unable to construct mostPopularMoviesUrl") // Если мы не смогли преобразовать строку в URL, то наше приложение упадёт с ошибкой
+        guard let url = URL(string: "\(BASE_API_URL)Top250Movies/\(API_TOKEN)") else {
+            preconditionFailure("Unable to construct mostPopularMoviesUrl")
         }
         return url
     }
-    
+
     func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void) {
         networkClient.fetch(url: mostPopularMoviesUrl) { result in
             switch result {
+            case .failure(let error):
+                handler(.failure(error))
             case .success(let data):
                 do {
                     let mostPopularMovies = try JSONDecoder().decode(MostPopularMovies.self, from: data)
@@ -32,8 +28,6 @@ struct MoviesLoader: MoviesLoading {
                 } catch {
                     handler(.failure(error))
                 }
-            case .failure(let error):
-                handler(.failure(error))
             }
         }
     }

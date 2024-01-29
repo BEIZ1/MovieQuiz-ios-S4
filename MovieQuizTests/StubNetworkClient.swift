@@ -1,7 +1,6 @@
-import Foundation
 @testable import MovieQuiz
-
-struct StubNetworkClientc {
+import Foundation
+struct StubNetworkClient: NetworkRouting {
     
     enum TestError: Error {
         case test
@@ -10,7 +9,11 @@ struct StubNetworkClientc {
     let emulateError: Bool
     
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
-        handler(emulateError ? .failure(TestError.test) : .success(expectedResponse))
+        if emulateError {
+            handler(.failure(TestError.test))
+        } else {
+            handler(.success(expectedResponse))
+        }
     }
     
     private var expectedResponse: Data {
